@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('tickets', function (Blueprint $table) {
+            $table->tinyInteger('rating')->nullable()->after('assigned_to');
+            $table->text('feedback')->nullable()->after('rating');
+            $table->timestamp('sla_due_at')->nullable()->after('estimated_completion_at');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('tickets', function (Blueprint $table) {
+            $table->dropColumn(['rating', 'feedback', 'sla_due_at']);
+        });
+    }
+};
