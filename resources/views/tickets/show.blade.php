@@ -326,7 +326,7 @@
 
                 {{-- Rating Section --}}
                 @if (in_array($ticket->status, ['resolved', 'closed']))
-                    <div class="bg-white border border-gray-200/50 rounded-2xl shadow-xl overflow-hidden">
+                    <div id="rating-section" class="bg-white border border-gray-200/50 rounded-2xl shadow-xl overflow-hidden">
                         <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-2">
                             <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path
@@ -355,7 +355,7 @@
                                     @endif
                                 </div>
                             @elseif(Auth::id() === $ticket->user_id)
-                                <form action="{{ route('tickets.rate', $ticket->id) }}" method="POST"
+                                <form action="{{ route('tickets.rate', $ticket->id) }}#rating-section" method="POST"
                                     class="space-y-4">
                                     @csrf
                                     <div>
@@ -363,15 +363,18 @@
                                             (1-5)</label>
                                         <div class="flex gap-2">
                                             @for ($i = 1; $i <= 5; $i++)
-                                                <label class="cursor-pointer">
+                                                <label class="cursor-pointer relative">
                                                     <input type="radio" name="rating" value="{{ $i }}"
-                                                        class="sr-only peer" required>
+                                                        class="absolute opacity-0 w-full h-full cursor-pointer peer" required>
                                                     <div
                                                         class="w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-gray-500 peer-checked:bg-yellow-400/20 peer-checked:text-yellow-600 peer-checked:border-yellow-400 hover:bg-gray-100 transition-colors font-medium text-sm">
                                                         {{ $i }}</div>
                                                 </label>
                                             @endfor
                                         </div>
+                                        @error('rating')
+                                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
                                     <div>
                                         <label for="feedback"
