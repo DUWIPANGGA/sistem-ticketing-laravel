@@ -61,4 +61,71 @@
         </div>
     </div>
 </div>
+
+@if(Auth::user()->role !== 'user')
+<!-- Assigned Tickets -->
+<div class="bg-white border border-gray-200/50 rounded-2xl shadow-xl overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-gray-200/50 flex items-center justify-between bg-gray-50/50">
+        <h2 class="text-lg font-bold text-gray-900">Tickets Assigned to You</h2>
+        <a href="{{ route('tickets.index', ['status' => 'open']) }}" class="text-sm font-medium text-blue-600 hover:text-blue-500">View all assignments</a>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50/50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ticket #</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Subject</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($assignedTickets as $ticket)
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                        <a href="{{ route('tickets.show', $ticket->id) }}">{{ $ticket->ticket_number }}</a>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ Str::limit($ticket->subject, 40) }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
+                            {{ match($ticket->priority) {
+                                'low' => 'bg-green-100 text-green-800 border-green-200',
+                                'medium' => 'bg-yellow-100 text-yellow-800 border-yellow-200',
+                                'high' => 'bg-orange-100 text-orange-800 border-orange-200',
+                                'urgent' => 'bg-red-100 text-red-800 border-red-200',
+                                default => 'bg-gray-100 text-gray-800 border-gray-200',
+                            } }}">
+                            {{ ucfirst($ticket->priority) }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border
+                            {{ match($ticket->status) {
+                                'open' => 'bg-blue-100 text-blue-800 border-blue-200',
+                                'in_progress' => 'bg-indigo-100 text-indigo-800 border-indigo-200',
+                                'resolved' => 'bg-green-100 text-green-800 border-green-200',
+                                default => 'bg-gray-100 text-gray-800 border-gray-200',
+                            } }}">
+                            {{ str_replace('_', ' ', ucfirst($ticket->status)) }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ $ticket->created_at->diffForHumans() }}
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" class="px-6 py-10 text-center text-sm text-gray-500 italic">
+                        No active tickets assigned to you.
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+@endif
 @endsection

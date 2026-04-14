@@ -45,6 +45,15 @@ class TicketController extends Controller
             $query->where('priority', $request->input('priority'));
         }
 
+        if ($request->filled('assignee_id')) {
+            $query->where('assigned_to', $request->input('assignee_id'));
+        }
+
+        // Shortcut for "assigned to me"
+        if ($request->has('my_tickets') && in_array(Auth::user()->role, ['admin', 'technician'])) {
+            $query->where('assigned_to', Auth::id());
+        }
+
         $tickets = $query->paginate(15)->withQueryString();
 
         $statuses = TicketStatus::cases();
@@ -215,6 +224,11 @@ class TicketController extends Controller
                 Mail::to($ticket->creator->email)->queue(new \App\Mail\TicketUpdatedMail($ticket, 'Your ticket was updated by '.Auth::user()->name.'.'));
                 $ticket->creator->notify(new \App\Notifications\TicketUpdatedNotification($ticket, 'Your ticket was updated by '.Auth::user()->name.'.'));
             }
+
+            // Notify Assignee if assigned_to changed and is not the current user
+            if ($ticket->wasChanged('assigned_to') && $ticket->assignee && $ticket->assigned_to !== Auth::id()) {
+                $ticket->assignee->notify(new \App\Notifications\TicketAssignedNotification($ticket));
+            }
         }
 
         return redirect()->route('tickets.show', $ticket->id)->with('success', 'Ticket updated successfully!');
@@ -315,9 +329,13 @@ class TicketController extends Controller
             $ticket->creator->notify(new \App\Notifications\TicketUpdatedNotification($ticket, 'A new comment was added by '.Auth::user()->name.'.'));
         }
         if ($ticket->creator && $ticket->creator->id === Auth::id()) {
-            // User replied, notify admin
-            $admins = \App\Models\User::whereIn('role', ['admin', 'technician'])->get();
-            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\TicketUpdatedNotification($ticket, 'User replied on their ticket.'));
+            // User replied, notify assignee or admins
+            if ($ticket->assignee && $ticket->assignee->id !== Auth::id()) {
+                $ticket->assignee->notify(new \App\Notifications\TicketUpdatedNotification($ticket, 'User replied on a ticket assigned to you.'));
+            } else {
+                $admins = \App\Models\User::whereIn('role', ['admin', 'technician'])->get();
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\TicketUpdatedNotification($ticket, 'User replied on their ticket.'));
+            }
         }
 
         return back()->with('success', 'Komentar berhasil dikirim!');

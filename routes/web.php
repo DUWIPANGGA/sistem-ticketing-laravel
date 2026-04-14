@@ -68,11 +68,7 @@ Route::get('/dashboard', function () {
         $query->where('user_id', $user->id);
     }
 
-    $totalTickets = $query->count();
-    
-    // Have to clone the query since count() executes it but doesn't necessarily consume it in a way that prevents cloning, 
-    // actually it's better to recreate or clone prior to count.
-    
+    $totalTickets = (clone $query)->count();
     $openTickets = (clone $query)->where('status', 'open')->count();
     $resolvedTickets = (clone $query)->where('status', 'resolved')->count();
     $slaBreachedTickets = (clone $query)->whereNotNull('sla_due_at')
@@ -80,7 +76,17 @@ Route::get('/dashboard', function () {
                                         ->whereNotIn('status', ['resolved', 'closed'])
                                         ->count();
 
-    return view('dashboard', compact('totalTickets', 'openTickets', 'resolvedTickets', 'slaBreachedTickets'));
+    $assignedTickets = collect();
+    if (in_array($user->role, ['admin', 'technician'])) {
+        $assignedTickets = App\Models\Ticket::where('assigned_to', $user->id)
+            ->whereNotIn('status', ['resolved', 'closed'])
+            ->orderBy('priority', 'desc')
+            ->orderBy('created_at', 'asc')
+            ->take(5)
+            ->get();
+    }
+
+    return view('dashboard', compact('totalTickets', 'openTickets', 'resolvedTickets', 'slaBreachedTickets', 'assignedTickets'));
 })->middleware(['auth'])->name('dashboard');
 
 

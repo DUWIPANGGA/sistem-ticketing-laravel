@@ -53,7 +53,12 @@
             <button type="submit" class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500 w-full sm:w-auto transition-colors">
                 Filter
             </button>
-            @if(request()->hasAny(['search', 'status', 'priority']))
+            @if(in_array(Auth::user()->role, ['admin', 'technician']))
+                <a href="{{ route('tickets.index', ['my_tickets' => 1]) }}" class="inline-flex justify-center items-center px-4 py-2 border border-blue-200 text-sm font-medium rounded-xl text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500 w-full sm:w-auto transition-colors">
+                    My Tickets
+                </a>
+            @endif
+            @if(request()->hasAny(['search', 'status', 'priority', 'my_tickets']))
                 <a href="{{ route('tickets.index') }}" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-gray-500 w-full sm:w-auto transition-colors">
                     Reset
                 </a>
