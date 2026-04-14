@@ -19,47 +19,47 @@
     </div>
 </div>
 
-<!-- Quick Stats placeholder -->
+<!-- Quick Stats -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <div class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-blue-500/50 transition-colors">
+    <a href="{{ route('tickets.index') }}" class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-blue-500/50 transition-all hover:shadow-xl transform hover:-translate-y-1">
         <div>
             <p class="text-sm font-medium text-gray-500 mb-1">Total Tickets</p>
             <p class="text-3xl font-bold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">{{ $totalTickets }}</p>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-gray-50/50 flex items-center justify-center border border-gray-200">
+        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center border border-blue-100 group-hover:bg-blue-100 transition-colors">
             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
         </div>
-    </div>
+    </a>
     
-    <div class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-yellow-500/50 transition-colors">
+    <a href="{{ route('tickets.index', ['status' => 'open']) }}" class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-yellow-500/50 transition-all hover:shadow-xl transform hover:-translate-y-1">
         <div>
             <p class="text-sm font-medium text-gray-500 mb-1">Open Tickets</p>
             <p class="text-3xl font-bold tracking-tight text-gray-900 group-hover:text-yellow-600 transition-colors">{{ $openTickets }}</p>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-gray-50/50 flex items-center justify-center border border-gray-200">
+        <div class="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center border border-yellow-100 group-hover:bg-yellow-100 transition-colors">
             <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-    </div>
+    </a>
     
-    <div class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-green-500/50 transition-colors">
+    <a href="{{ route('tickets.index', ['status' => 'resolved']) }}" class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-green-500/50 transition-all hover:shadow-xl transform hover:-translate-y-1">
         <div>
             <p class="text-sm font-medium text-gray-500 mb-1">Resolved Tickets</p>
             <p class="text-3xl font-bold tracking-tight text-gray-900 group-hover:text-green-600 transition-colors">{{ $resolvedTickets }}</p>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-gray-50/50 flex items-center justify-center border border-gray-200">
+        <div class="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center border border-green-100 group-hover:bg-green-100 transition-colors">
             <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
         </div>
-    </div>
+    </a>
     
-    <div class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-red-500/50 transition-colors">
+    <a href="{{ route('tickets.index') }}" class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-red-500/50 transition-all hover:shadow-xl transform hover:-translate-y-1">
         <div>
             <p class="text-sm font-medium text-gray-500 mb-1">SLA Breached</p>
             <p class="text-3xl font-bold tracking-tight text-gray-900 group-hover:text-red-600 transition-colors">{{ $slaBreachedTickets }}</p>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-gray-50/50 flex items-center justify-center border border-gray-200">
+        <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center border border-red-100 group-hover:bg-red-100 transition-colors">
             <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-    </div>
+    </a>
 </div>
 
 @if(Auth::user()->role !== 'user')
@@ -77,14 +77,15 @@
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Subject</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
                     <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Created</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider uppercase">Created</th>
+                    <th class="px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider uppercase">Action</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($assignedTickets as $ticket)
-                <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
-                        <a href="{{ route('tickets.show', $ticket->id) }}">{{ $ticket->ticket_number }}</a>
+                <tr class="hover:bg-gray-50 transition-colors group">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{{ route('tickets.show', $ticket->id) }}" class="text-blue-600 hover:text-blue-500">{{ $ticket->ticket_number }}</a>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {{ Str::limit($ticket->subject, 40) }}
@@ -114,6 +115,11 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {{ $ticket->created_at->diffForHumans() }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="{{ route('tickets.show', $ticket->id) }}" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-lg transition-colors">
+                            View Details
+                        </a>
                     </td>
                 </tr>
                 @empty
