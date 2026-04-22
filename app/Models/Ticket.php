@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Ticket extends Model
 {
@@ -97,6 +99,12 @@ class Ticket extends Model
         static::creating(function ($model) {
             if (empty($model->ticket_number)) {
                 $model->ticket_number = static::generateTicketNumber();
+            }
+        });
+
+        static::addGlobalScope('user_visibility', function (Builder $builder) {
+            if (Auth::check() && !in_array(Auth::user()->role, ['admin', 'technician'])) {
+                $builder->where('user_id', Auth::id());
             }
         });
     }

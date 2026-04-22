@@ -131,6 +131,8 @@ class TicketController extends Controller
      */
     public function show(Ticket $ticket)
     {
+        Gate::authorize('view', $ticket);
+
         $ticket->load('creator', 'assignee');
         // Load only top-level comments with nested replies
         $comments = $ticket->updates()
@@ -263,6 +265,8 @@ class TicketController extends Controller
      */
     public function addUpdate(Request $request, Ticket $ticket)
     {
+        Gate::authorize('view', $ticket);
+
         $isAdminOrTech = in_array(Auth::user()->role, ['admin', 'technician']);
 
         // Admin/tech can submit without a comment if changing status/priority
@@ -346,6 +350,8 @@ class TicketController extends Controller
      */
     public function track(Ticket $ticket)
     {
+        Gate::authorize('view', $ticket);
+
         $ticket->load('updates.user', 'creator', 'assignee');
 
         return view('tickets.track', compact('ticket'));
