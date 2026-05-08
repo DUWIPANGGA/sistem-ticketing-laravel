@@ -113,6 +113,46 @@
                         </div>
                     </div>
 
+                    @if (in_array(Auth::user()->role, ['admin', 'technician']))
+                        <div>
+                            <label for="user_id" class="block text-sm font-medium text-gray-700 mb-1.5">Pemilik Tiket
+                                <span class="text-gray-500 text-xs font-normal">(Opsional, khusus Admin)</span></label>
+                            <div class="relative">
+                                <select name="user_id" id="user_id"
+                                    class="block w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50/50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all shadow-inner sm:text-sm appearance-none">
+                                    <option value="" selected>Pilih User (Buat untuk diri sendiri)</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}"
+                                            {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                            {{ $user->name }} ({{ $user->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div
+                                    class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            @error('user_id')
+                                <p class="text-red-600 text-xs mt-1.5 flex items-center"><svg class="w-4 h-4 mr-1"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>{{ $message }}</p>
+                            @enderror
+                        </div>
+                    @else
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Pemilik Tiket</label>
+                            <div class="block w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100/50 text-gray-700 sm:text-sm cursor-not-allowed">
+                                {{ Auth::user()->name }}
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="attachments" class="block text-sm font-medium text-gray-700 mb-1.5">Attachments

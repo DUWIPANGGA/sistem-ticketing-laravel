@@ -33,7 +33,8 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories',
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'owner_name' => 'nullable|string|max:255'
         ]);
 
         Category::create($request->all());
@@ -50,7 +51,8 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'description' => 'nullable|string'
+            'description' => 'nullable|string',
+            'owner_name' => 'nullable|string|max:255'
         ]);
 
         $category->update($request->all());

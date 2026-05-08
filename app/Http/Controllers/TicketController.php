@@ -71,7 +71,12 @@ class TicketController extends Controller
         $statuses = TicketStatus::cases(); // Usually only 'open' is available for creation
         $categories = \App\Models\Category::all();
 
-        return view('tickets.create', compact('priorities', 'statuses', 'categories'));
+        $users = [];
+        if (in_array(Auth::user()->role, ['admin', 'technician'])) {
+            $users = \App\Models\User::all();
+        }
+
+        return view('tickets.create', compact('priorities', 'statuses', 'categories', 'users'));
     }
 
     /**
@@ -86,6 +91,7 @@ class TicketController extends Controller
             'category' => 'required|string|max:100',
             'attachments' => 'nullable|array',
             'attachments.*' => 'file|max:2048', // Max 2MB
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         $attachmentPaths = [];
@@ -99,6 +105,11 @@ class TicketController extends Controller
         $slaDueAt = $this->calculateSla($request->priority);
         $estimatedCompletionAt = $this->calculateEstimatedCompletionTime($request->priority);
 
+        $userId = Auth::id();
+        if (in_array(Auth::user()->role, ['admin', 'technician']) && $request->filled('user_id')) {
+            $userId = $request->user_id;
+        }
+
         $ticket = Ticket::create([
             'subject' => $request->subject,
             'description' => $request->description,
@@ -107,7 +118,7 @@ class TicketController extends Controller
             'attachments' => $attachmentPaths,
             'estimated_completion_at' => $estimatedCompletionAt,
             'sla_due_at' => $slaDueAt,
-            'user_id' => Auth::id(),
+            'user_id' => $userId,
             'status' => TicketStatus::OPEN->value, // Default to open
         ]);
 

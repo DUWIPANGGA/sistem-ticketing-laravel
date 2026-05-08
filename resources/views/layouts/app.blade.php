@@ -303,6 +303,7 @@
             scrollbar-width: none;
         }
     </style>
+    @stack('scripts')
 </body>
 
 </html>
