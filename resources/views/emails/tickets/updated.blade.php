@@ -7,7 +7,7 @@ Hello {{ $ticket->creator->name }},
 
 **Subject:** {{ $ticket->subject }}  
 **Status:** {{ \App\Enums\TicketStatus::from($ticket->status)->label() }}  
-**Priority:** {{ \App\Enums\TicketPriority::from($ticket->priority)->label() }}  
+**Priority:** {{ $ticket->priority_label }}  
 
 <x-mail::button :url="route('tickets.show', $ticket->id)">
 View Ticket

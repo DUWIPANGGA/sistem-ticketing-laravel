@@ -2,10 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TicketController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\KnowledgeBaseArticleController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\NotificationController;
 
 /*
@@ -46,14 +44,9 @@ Route::middleware(['auth'])->group(function () {
     // Report
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
 
-    // Users
-    Route::resource('users', UserController::class);
-
-    // Knowledge Base
-    Route::resource('knowledge-base', KnowledgeBaseArticleController::class);
-
-    // Categories
-    Route::resource('categories', CategoryController::class);
+    // Knowledge Base (public)
+    Route::get('/knowledge-base', [KnowledgeBaseArticleController::class, 'index'])->name('knowledge-base.index');
+    Route::get('/knowledge-base/{id}', [KnowledgeBaseArticleController::class, 'show'])->name('knowledge-base.show');
 
     // Notifications
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
@@ -91,3 +84,4 @@ Route::get('/dashboard', function () {
 
 
 require __DIR__.'/auth.php';
+require __DIR__.'/master-data.php';

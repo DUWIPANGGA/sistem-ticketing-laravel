@@ -47,7 +47,7 @@
                 @endif
                 @if ($comment->priority)
                     <span class="text-xs px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium">
-                        Prioritas → {{ \App\Enums\TicketPriority::from($comment->priority)->label() }}
+                        Prioritas → {{ $comment->priority_label }}
                     </span>
                 @endif
                 <span class="text-xs text-gray-400 ml-auto">{{ $comment->created_at->diffForHumans() }}</span>

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\TicketPriority;
 use App\Enums\TicketStatus;
+use App\Models\Priority;
 use App\Models\Ticket;
 use App\Models\TicketUpdate;
 use Carbon\Carbon;
@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rules\Enum;
 
 class TicketController extends Controller
 {
@@ -57,7 +56,7 @@ class TicketController extends Controller
         $tickets = $query->paginate(15)->withQueryString();
 
         $statuses = TicketStatus::cases();
-        $priorities = TicketPriority::cases();
+        $priorities = Priority::orderBy('sort_order')->get();
 
         return view('tickets.index', compact('tickets', 'statuses', 'priorities'));
     }
@@ -67,7 +66,7 @@ class TicketController extends Controller
      */
     public function create()
     {
-        $priorities = TicketPriority::cases();
+        $priorities = Priority::orderBy('sort_order')->get();
         $statuses = TicketStatus::cases(); // Usually only 'open' is available for creation
         $categories = \App\Models\Category::all();
 
@@ -87,7 +86,7 @@ class TicketController extends Controller
         $request->validate([
             'subject' => 'required|string|max:255',
             'description' => 'required|string',
-            'priority' => ['required', new Enum(TicketPriority::class)],
+            'priority' => 'required|exists:priorities,value',
             'category' => 'required|string|max:100',
             'attachments' => 'nullable|array',
             'attachments.*' => 'file|max:2048', // Max 2MB
@@ -152,7 +151,7 @@ class TicketController extends Controller
             ->orderBy('created_at')
             ->get();
         $statuses = TicketStatus::cases();
-        $priorities = TicketPriority::cases();
+        $priorities = Priority::orderBy('sort_order')->get();
 
         return view('tickets.show', compact('ticket', 'comments', 'statuses', 'priorities'));
     }
@@ -164,7 +163,7 @@ class TicketController extends Controller
     {
         Gate::authorize('update', $ticket); // Implement authorization policy
 
-        $priorities = TicketPriority::cases();
+        $priorities = Priority::orderBy('sort_order')->get();
         $statuses = TicketStatus::cases();
         $categories = \App\Models\Category::all();
 
@@ -181,7 +180,7 @@ class TicketController extends Controller
         $request->validate([
             'subject' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
-            'priority' => ['sometimes', 'required', new Enum(TicketPriority::class)],
+            'priority' => 'sometimes|required|exists:priorities,value',
             'status' => ['sometimes', 'required', new Enum(TicketStatus::class)],
             'category' => 'sometimes|required|string|max:100',
             'attachments' => 'nullable|array',
@@ -288,7 +287,7 @@ class TicketController extends Controller
             'attachments' => 'nullable|array',
             'attachments.*' => 'file|max:2048',
             'status' => ['nullable', new Enum(TicketStatus::class)],
-            'priority' => ['nullable', new Enum(TicketPriority::class)],
+            'priority' => 'nullable|exists:priorities,value',
             'parent_id' => 'nullable|exists:ticket_updates,id',
         ]);
 
@@ -300,7 +299,8 @@ class TicketController extends Controller
                 $parts[] = 'Status diubah menjadi: '.\App\Enums\TicketStatus::from($request->status)->label();
             }
             if ($request->filled('priority')) {
-                $parts[] = 'Prioritas diubah menjadi: '.\App\Enums\TicketPriority::from($request->priority)->label();
+                $p = Priority::where('value', $request->priority)->first();
+                $parts[] = 'Prioritas diubah menjadi: '.($p ? $p->name : $request->priority);
             }
             $comment = implode(', ', $parts).'.';
         }
@@ -400,14 +400,9 @@ class TicketController extends Controller
     private function calculateSla($priority, $startTime = null)
     {
         $time = $startTime ? Carbon::parse($startTime) : Carbon::now();
+        $p = Priority::where('value', $priority)->first();
 
-        return match ($priority) {
-            TicketPriority::LOW->value => (clone $time)->addHours(48),
-            TicketPriority::MEDIUM->value => (clone $time)->addHours(24),
-            TicketPriority::HIGH->value => (clone $time)->addHours(4),
-            TicketPriority::URGENT->value => (clone $time)->addHours(1),
-            default => null,
-        };
+        return $p ? (clone $time)->addHours($p->sla_hours) : null;
     }
 
     /**

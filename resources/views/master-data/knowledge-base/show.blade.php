@@ -7,7 +7,7 @@
             <h1 class="text-3xl font-bold text-gray-900">Knowledge Base Article</h1>
             <p class="text-gray-500 mt-1 text-sm">Read and learn from this guide.</p>
         </div>
-        <a href="{{ route('knowledge-base.index') }}" class="inline-flex items-center text-gray-500 hover:text-gray-900 transition-colors">
+        <a href="{{ route('master-data.knowledge-base.index') }}" class="inline-flex items-center text-gray-500 hover:text-gray-900 transition-colors">
             <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Back to Articles
         </a>
@@ -35,7 +35,7 @@
             </div>
 
             <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">{{ $article->title }}</h1>
-            
+
             <div class="flex items-center gap-4 text-sm text-gray-500 border-b border-gray-200/50 pb-8 mb-8">
                 <div class="flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center font-bold text-gray-900">
@@ -47,11 +47,10 @@
                 <span>Published {{ $article->created_at->format('M j, Y') }}</span>
             </div>
 
-            <div class="prose  prose-blue max-w-none text-gray-700 text-lg leading-relaxed">
+            <div class="prose prose-blue max-w-none text-gray-700 text-lg leading-relaxed">
                 {!! nl2br(e($article->content)) !!}
             </div>
-            
-            @if(in_array(Auth::user()->role, ['admin', 'technician']))
+
             <div class="mt-12 pt-6 border-t border-gray-200/50 flex items-center gap-4">
                 <a href="{{ route('master-data.knowledge-base.edit', $article->id) }}" class="inline-flex items-center px-4 py-2 border border-blue-500/50 text-sm font-medium rounded-xl shadow-sm text-blue-600 bg-blue-500/10 hover:bg-blue-500/20 focus:outline-none transition-colors">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
@@ -66,7 +65,6 @@
                     </button>
                 </form>
             </div>
-            @endif
         </div>
     </div>
 </div>

@@ -7,7 +7,7 @@
             <h1 class="text-3xl font-bold text-gray-900">Edit User</h1>
             <p class="text-gray-500 mt-1 text-sm">Update user details and access level.</p>
         </div>
-        <a href="{{ route('users.index') }}" class="inline-flex items-center text-gray-500 hover:text-gray-900 transition-colors">
+        <a href="{{ route('master-data.users.index') }}" class="inline-flex items-center text-gray-500 hover:text-gray-900 transition-colors">
             <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Back to Users
         </a>
@@ -16,7 +16,7 @@
     <div class="bg-white border border-gray-200/50 rounded-2xl shadow-xl overflow-hidden">
         <div class="h-1 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
         <div class="p-8">
-            <form action="{{ route('users.update', $user->id) }}" method="POST" class="space-y-6">
+            <form action="{{ route('master-data.users.update', $user->id) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -56,8 +56,27 @@
                     @enderror
                 </div>
 
+                <div>
+                    <label for="division_id" class="block text-sm font-medium text-gray-700 mb-1.5">Division <span class="text-gray-500 text-xs font-normal">(Optional)</span></label>
+                    <div class="relative">
+                        <select name="division_id" id="division_id"
+                                class="block w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50/50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all shadow-inner sm:text-sm appearance-none">
+                            <option value="">No Division</option>
+                            @foreach ($divisions as $division)
+                                <option value="{{ $division->id }}" {{ old('division_id', $user->division_id) == $division->id ? 'selected' : '' }}>{{ $division->name }}</option>
+                            @endforeach
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 top-0 bottom-0 flex items-center px-4 text-gray-500">
+                           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                    @error('division_id')
+                        <p class="text-red-600 text-xs mt-1.5">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="pt-6 border-t border-gray-200/50 flex justify-end gap-4">
-                    <a href="{{ route('users.index') }}" class="px-6 py-2.5 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none transition-colors">
+                    <a href="{{ route('master-data.users.index') }}" class="px-6 py-2.5 border border-gray-300 rounded-xl shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-100 focus:outline-none transition-colors">
                         Cancel
                     </a>
                     <button type="submit" class="inline-flex items-center px-6 py-2.5 border border-transparent rounded-xl shadow-lg shadow-blue-500/30 text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-500 transition-all transform hover:-translate-y-0.5" {{ $user->id === Auth::id() ? 'disabled' : '' }}>

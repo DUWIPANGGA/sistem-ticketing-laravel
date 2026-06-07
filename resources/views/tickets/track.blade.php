@@ -54,7 +54,7 @@
                             'urgent' => 'bg-red-500 animate-pulse',
                             default => 'bg-gray-400',
                         } }}"></span>
-                    {{ \App\Enums\TicketPriority::from($ticket->priority)->label() }}
+                    {{ $ticket->priority_label }}
                 </span>
             </div>
         </div>
@@ -117,7 +117,7 @@
                                 @if ($update->priority)
                                     <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-white border border-gray-200 text-gray-500">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
-                                        Priority: <span class="text-gray-900">{{ \App\Enums\TicketPriority::from($update->priority)->label() }}</span>
+                                        Priority: <span class="text-gray-900">{{ $update->priority_label }}</span>
                                     </span>
                                 @endif
                             </div>

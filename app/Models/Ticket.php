@@ -44,6 +44,11 @@ class Ticket extends Model
         'attachments' => 'array',
     ];
 
+    public function getPriorityLabelAttribute(): string
+    {
+        return \App\Models\Priority::where('value', $this->priority)->first()?->name ?? ucfirst($this->priority);
+    }
+
     /**
      * Get the user that created the ticket.
      */

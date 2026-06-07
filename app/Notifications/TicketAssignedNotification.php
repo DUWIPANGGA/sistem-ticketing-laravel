@@ -41,7 +41,7 @@ class TicketAssignedNotification extends Notification implements ShouldQueue
             ->line('A ticket has been assigned to you.')
             ->line('Ticket #: ' . $this->ticket->ticket_number)
             ->line('Subject: ' . $this->ticket->subject)
-            ->line('Priority: ' . ucfirst($this->ticket->priority))
+            ->line('Priority: ' . $this->ticket->priority_label)
             ->action('View Ticket', route('tickets.show', $this->ticket->id))
             ->line('Please review and process the ticket as soon as possible.');
     }

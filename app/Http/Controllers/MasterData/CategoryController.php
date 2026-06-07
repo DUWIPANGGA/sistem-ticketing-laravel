@@ -1,36 +1,29 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\MasterData;
 
-use Illuminate\Http\Request;
-
+use App\Http\Controllers\Controller;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware(function ($request, $next) {
-    //         if ($request->user() && $request->user()->role !== 'admin') {
-    //             abort(403);
-    //         }
-    //         return $next($request);
-    //     });
-    // }
-
     public function index()
     {
+        $this->requireAdmin();
         $categories = Category::paginate(10);
-        return view('categories.index', compact('categories'));
+        return view('master-data.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('categories.create');
+        $this->requireAdmin();
+        return view('master-data.categories.create');
     }
 
     public function store(Request $request)
     {
+        $this->requireAdmin();
         $request->validate([
             'name' => 'required|string|max:255|unique:categories',
             'description' => 'nullable|string',
@@ -39,16 +32,18 @@ class CategoryController extends Controller
 
         Category::create($request->all());
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil ditambahkan.');
+        return redirect()->route('master-data.categories.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
     public function edit(Category $category)
     {
-        return view('categories.edit', compact('category'));
+        $this->requireAdmin();
+        return view('master-data.categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)
     {
+        $this->requireAdmin();
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
             'description' => 'nullable|string',
@@ -57,13 +52,14 @@ class CategoryController extends Controller
 
         $category->update($request->all());
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil diperbarui.');
+        return redirect()->route('master-data.categories.index')->with('success', 'Kategori berhasil diperbarui.');
     }
 
     public function destroy(Category $category)
     {
+        $this->requireAdmin();
         $category->delete();
 
-        return redirect()->route('categories.index')->with('success', 'Kategori berhasil dihapus.');
+        return redirect()->route('master-data.categories.index')->with('success', 'Kategori berhasil dihapus.');
     }
 }

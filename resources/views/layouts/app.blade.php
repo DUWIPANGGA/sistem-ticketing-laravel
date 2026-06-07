@@ -72,41 +72,69 @@
                     </svg>
                     Export Tickets (CSV)
                 </a>
-
-                <a href="{{ route('users.index') }}"
-                    class="flex items-center gap-3 {{ request()->routeIs('users.*') ? 'bg-blue-500/10 text-blue-600 border-r-2 border-blue-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }} px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
-                    <svg class="w-5 h-5 {{ request()->routeIs('users.*') ? 'text-blue-500' : 'text-gray-500' }}"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                        </path>
-                    </svg>
-                    Manage Users
-                </a>
             @endif
 
+            @if (in_array(Auth::user()->role, ['admin']))
+            <div class="pt-4 mt-4 border-t border-gray-200/50" x-data="{ open: true }">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 hover:text-gray-700 transition-colors">
+                    <span>Data Master</span>
+                    <svg class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'rotate-90': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+
+                <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0">
+                    <a href="{{ route('master-data.users.index') }}"
+                        class="flex items-center gap-3 pl-6 {{ request()->routeIs('master-data.users.*') ? 'bg-blue-500/10 text-blue-600 border-r-2 border-blue-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }} px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 {{ request()->routeIs('master-data.users.*') ? 'text-blue-500' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        Users
+                    </a>
+
+                    <a href="{{ route('master-data.priorities.index') }}"
+                        class="flex items-center gap-3 pl-6 {{ request()->routeIs('master-data.priorities.*') ? 'bg-blue-500/10 text-blue-600 border-r-2 border-blue-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }} px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 {{ request()->routeIs('master-data.priorities.*') ? 'text-blue-500' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4v16h18V4H3zm16 14H5V8h14v10zM7 10h2v2H7v-2zm0 4h2v2H7v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z"></path>
+                        </svg>
+                        Priorities
+                    </a>
+
+                    <a href="{{ route('master-data.categories.index') }}"
+                        class="flex items-center gap-3 pl-6 {{ request()->routeIs('master-data.categories.*') ? 'bg-blue-500/10 text-blue-600 border-r-2 border-blue-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }} px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 {{ request()->routeIs('master-data.categories.*') ? 'text-blue-500' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        Categories
+                    </a>
+
+                    <a href="{{ route('master-data.divisions.index') }}"
+                        class="flex items-center gap-3 pl-6 {{ request()->routeIs('master-data.divisions.*') ? 'bg-blue-500/10 text-blue-600 border-r-2 border-blue-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }} px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 {{ request()->routeIs('master-data.divisions.*') ? 'text-blue-500' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        Divisions
+                    </a>
+
+                    <a href="{{ route('master-data.knowledge-base.index') }}"
+                        class="flex items-center gap-3 pl-6 {{ request()->routeIs('master-data.knowledge-base.*') ? 'bg-blue-500/10 text-blue-600 border-r-2 border-blue-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }} px-3 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <svg class="w-4 h-4 {{ request()->routeIs('master-data.knowledge-base.*') ? 'text-blue-500' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                        Knowledge Base
+                    </a>
+                </div>
+            </div>
+            @endif
+
+            @if (Auth::user()->role === 'user')
             <a href="{{ route('knowledge-base.index') }}"
                 class="flex items-center gap-3 {{ request()->routeIs('knowledge-base.*') ? 'bg-blue-500/10 text-blue-600 border-r-2 border-blue-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }} px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
-                <svg class="w-5 h-5 {{ request()->routeIs('knowledge-base.*') ? 'text-blue-500' : 'text-gray-500' }}"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
-                    </path>
+                <svg class="w-5 h-5 {{ request()->routeIs('knowledge-base.*') ? 'text-blue-500' : 'text-gray-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                 </svg>
                 Knowledge Base
             </a>
-
-            @if (Auth::user()->role === 'admin')
-                <a href="{{ route('categories.index') }}"
-                    class="flex items-center gap-3 {{ request()->routeIs('categories.*') ? 'bg-blue-500/10 text-blue-600 border-r-2 border-blue-500' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100' }} px-3 py-2.5 rounded-lg text-sm font-medium transition-colors">
-                    <svg class="w-5 h-5 {{ request()->routeIs('categories.*') ? 'text-blue-500' : 'text-gray-500' }}"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z">
-                        </path>
-                    </svg>
-                    Manage Categories
-                </a>
             @endif
 
             <div class="pt-4 mt-4 border-t border-gray-200/50">

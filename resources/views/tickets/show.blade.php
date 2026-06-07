@@ -110,7 +110,7 @@
                                         'urgent' => 'bg-red-500 animate-pulse',
                                         default => 'bg-gray-400',
                                     } }}"></span>
-                                    {{ \App\Enums\TicketPriority::from($ticket->priority)->label() }}
+                                    {{ $ticket->priority_label }}
                                 </span>
                             </div>
                         </div>
