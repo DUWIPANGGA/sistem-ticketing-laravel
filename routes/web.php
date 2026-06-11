@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\KnowledgeBaseArticleController;
@@ -41,8 +42,12 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{ticket}/rate', [TicketController::class, 'rate'])->name('rate');
     });
 
-    // Report
-    Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [ReportController::class, 'index'])->name('index');
+        Route::get('/data', [ReportController::class, 'chartData'])->name('data');
+        Route::get('/export', [ReportController::class, 'export'])->name('export');
+    });
 
     // Knowledge Base (public)
     Route::get('/knowledge-base', [KnowledgeBaseArticleController::class, 'index'])->name('knowledge-base.index');
@@ -51,36 +56,11 @@ Route::middleware(['auth'])->group(function () {
     // Notifications
     Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.markAllRead');
     Route::get('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/data', [DashboardController::class, 'chartData'])->name('dashboard.data');
 });
-
-Route::get('/dashboard', function () {
-    $user = Illuminate\Support\Facades\Auth::user();
-    $query = App\Models\Ticket::query();
-
-    if (!in_array($user->role, ['admin', 'technician'])) {
-        $query->where('user_id', $user->id);
-    }
-
-    $totalTickets = (clone $query)->count();
-    $openTickets = (clone $query)->where('status', 'open')->count();
-    $resolvedTickets = (clone $query)->where('status', 'resolved')->count();
-    $slaBreachedTickets = (clone $query)->whereNotNull('sla_due_at')
-                                        ->where('sla_due_at', '<', now())
-                                        ->whereNotIn('status', ['resolved', 'closed'])
-                                        ->count();
-
-    $assignedTickets = collect();
-    if (in_array($user->role, ['admin', 'technician'])) {
-        $assignedTickets = App\Models\Ticket::where('assigned_to', $user->id)
-            ->whereNotIn('status', ['resolved', 'closed'])
-            ->orderBy('priority', 'desc')
-            ->orderBy('created_at', 'asc')
-            ->take(5)
-            ->get();
-    }
-
-    return view('dashboard', compact('totalTickets', 'openTickets', 'resolvedTickets', 'slaBreachedTickets', 'assignedTickets'));
-})->middleware(['auth'])->name('dashboard');
 
 
 require __DIR__.'/auth.php';

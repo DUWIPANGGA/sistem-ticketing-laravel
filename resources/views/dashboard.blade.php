@@ -30,7 +30,7 @@
             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
         </div>
     </a>
-    
+
     <a href="{{ route('tickets.index', ['status' => 'open']) }}" class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-yellow-500/50 transition-all hover:shadow-xl transform hover:-translate-y-1">
         <div>
             <p class="text-sm font-medium text-gray-500 mb-1">Open Tickets</p>
@@ -40,7 +40,7 @@
             <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
     </a>
-    
+
     <a href="{{ route('tickets.index', ['status' => 'resolved']) }}" class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-green-500/50 transition-all hover:shadow-xl transform hover:-translate-y-1">
         <div>
             <p class="text-sm font-medium text-gray-500 mb-1">Resolved Tickets</p>
@@ -50,7 +50,7 @@
             <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
         </div>
     </a>
-    
+
     <a href="{{ route('tickets.index') }}" class="bg-white border border-gray-200/50 rounded-2xl p-6 shadow-lg flex items-center justify-between group hover:border-red-500/50 transition-all hover:shadow-xl transform hover:-translate-y-1">
         <div>
             <p class="text-sm font-medium text-gray-500 mb-1">SLA Breached</p>
@@ -61,6 +61,131 @@
         </div>
     </a>
 </div>
+
+<!-- Charts Section -->
+<div class="mb-8">
+    <h2 class="text-lg font-bold text-gray-900 mb-4">Data Dinamis & Grafik</h2>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Line Chart: Monthly Trend -->
+        <div class="bg-white border border-gray-200/50 rounded-2xl shadow-xl p-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Tren Tiket per Bulan</h3>
+            <canvas id="chartMonthly" height="200"></canvas>
+        </div>
+        <!-- Doughnut Chart: Status -->
+        <div class="bg-white border border-gray-200/50 rounded-2xl shadow-xl p-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Distribusi Status Tiket</h3>
+            <canvas id="chartStatus" height="200"></canvas>
+        </div>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Bar Chart: Category -->
+        <div class="bg-white border border-gray-200/50 rounded-2xl shadow-xl p-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Tiket per Kategori</h3>
+            <canvas id="chartCategory" height="200"></canvas>
+        </div>
+        <!-- Bar Chart: Priority -->
+        <div class="bg-white border border-gray-200/50 rounded-2xl shadow-xl p-6">
+            <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Tiket per Prioritas</h3>
+            <canvas id="chartPriority" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    fetch('{{ route("dashboard.data") }}')
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('chartMonthly'), {
+                type: 'line',
+                data: {
+                    labels: data.monthly.labels,
+                    datasets: [{
+                        label: 'Tiket',
+                        data: data.monthly.data,
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('chartStatus'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.status.labels,
+                    datasets: [{
+                        data: data.status.data,
+                        backgroundColor: data.status.colors,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('chartCategory'), {
+                type: 'bar',
+                data: {
+                    labels: data.category.labels,
+                    datasets: [{
+                        label: 'Jumlah Tiket',
+                        data: data.category.data,
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                        borderColor: '#6366F1',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+
+            new Chart(document.getElementById('chartPriority'), {
+                type: 'bar',
+                data: {
+                    labels: data.priority.labels,
+                    datasets: [{
+                        label: 'Jumlah Tiket',
+                        data: data.priority.data,
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(249, 115, 22, 0.7)',
+                            'rgba(239, 68, 68, 0.7)',
+                        ],
+                        borderColor: ['#10B981', '#F59E0B', '#F97316', '#EF4444'],
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                    }
+                }
+            });
+        });
+});
+</script>
 
 @if(Auth::user()->role !== 'user')
 <!-- Assigned Tickets -->
