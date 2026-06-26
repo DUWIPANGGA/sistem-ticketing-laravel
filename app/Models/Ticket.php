@@ -74,6 +74,14 @@ class Ticket extends Model
     }
 
     /**
+     * Get the dynamic field values for the ticket.
+     */
+    public function dynamicFieldValues()
+    {
+        return $this->hasMany(TicketFieldValue::class, 'ticket_id');
+    }
+
+    /**
      * Generates a unique ticket number.
      */
     public static function generateTicketNumber(): string

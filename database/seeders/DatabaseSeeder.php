@@ -44,6 +44,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             CategorySeeder::class,
+            CategoryFieldSeeder::class,
             PrioritySeeder::class,
             DivisionSeeder::class,
             TicketSeeder::class,

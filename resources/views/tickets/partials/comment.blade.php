@@ -42,7 +42,7 @@
                 @endif
                 @if ($comment->status)
                     <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">
-                        Status → {{ \App\Enums\TicketStatus::from($comment->status)->label() }}
+                        Status → {{ \App\Enums\TicketStatus::tryFrom($comment->status)?->label() ?? ucfirst($comment->status) }}
                     </span>
                 @endif
                 @if ($comment->priority)

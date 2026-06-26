@@ -33,7 +33,7 @@
                         'closed' => 'bg-red-500/10 text-red-600 border-red-500/20',
                         default => 'bg-gray-500/10 text-gray-500 border-gray-500/20',
                     } }}">
-                    {{ \App\Enums\TicketStatus::from($ticket->status)->label() }}
+                    {{ \App\Enums\TicketStatus::tryFrom($ticket->status)?->label() ?? ucfirst($ticket->status) }}
                 </span>
             </div>
             <div class="bg-gray-50/50 rounded-xl p-4 border border-gray-200/50">
@@ -110,7 +110,7 @@
                                 @if ($update->status)
                                     <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium bg-white border border-gray-200 text-gray-500">
                                         <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
-                                        Status: <span class="text-gray-900">{{ \App\Enums\TicketStatus::from($update->status)->label() }}</span>
+                                        Status: <span class="text-gray-900">{{ \App\Enums\TicketStatus::tryFrom($update->status)?->label() ?? ucfirst($update->status) }}</span>
                                     </span>
                                 @endif
                                 

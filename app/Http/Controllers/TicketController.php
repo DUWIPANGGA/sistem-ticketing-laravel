@@ -287,8 +287,8 @@ class TicketController extends Controller
             'comment' => $commentRequired ? 'required|string' : 'nullable|string',
             'attachments' => 'nullable|array',
             'attachments.*' => 'file|max:2048',
-            'status' => ['nullable', new Enum(TicketStatus::class)],
-            'priority' => 'nullable|exists:priorities,value',
+            'status' => 'nullable|string',
+            'priority' => 'nullable|string',
             'parent_id' => 'nullable|exists:ticket_updates,id',
         ]);
 
@@ -297,7 +297,7 @@ class TicketController extends Controller
         if (empty($comment) && $isAdminOrTech) {
             $parts = [];
             if ($request->filled('status')) {
-                $parts[] = 'Status diubah menjadi: '.\App\Enums\TicketStatus::from($request->status)->label();
+                $parts[] = 'Status diubah menjadi: '.(\App\Enums\TicketStatus::tryFrom($request->status)?->label() ?? ucfirst($request->status));
             }
             if ($request->filled('priority')) {
                 $p = Priority::where('value', $request->priority)->first();

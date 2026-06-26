@@ -26,6 +26,7 @@ Route::get('/', function () {
 // Ticket Routes
 Route::middleware(['auth'])->group(function () {
     Route::prefix('tickets')->name('tickets.')->group(function () {
+        Route::get('/categories/fields', [TicketController::class, 'getCategoryFields'])->name('category-fields');
         Route::get('/', [TicketController::class, 'index'])->name('index');
         Route::get('/create', [TicketController::class, 'create'])->name('create');
         Route::post('/', [TicketController::class, 'store'])->name('store');

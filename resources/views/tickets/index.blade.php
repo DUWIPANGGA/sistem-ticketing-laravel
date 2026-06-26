@@ -115,7 +115,7 @@
                                     'closed' => 'bg-red-500/10 text-red-600 border-red-500/20',
                                     default => 'bg-gray-500/10 text-gray-500 border-gray-500/20',
                                 } }}">
-                                {{ \App\Enums\TicketStatus::from($ticket->status)->label() }}
+                                {{ \App\Enums\TicketStatus::tryFrom($ticket->status)?->label() ?? ucfirst($ticket->status) }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">

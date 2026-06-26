@@ -90,7 +90,7 @@
                                     'closed' => 'bg-red-500/10 text-red-600 border-red-500/20',
                                     default => 'bg-gray-500/10 text-gray-500 border-gray-500/20',
                                 } }}">
-                                    {{ \App\Enums\TicketStatus::from($ticket->status)->label() }}
+                                    {{ \App\Enums\TicketStatus::tryFrom($ticket->status)?->label() ?? ucfirst($ticket->status) }}
                                 </span>
                                 <span
                                     class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border
@@ -274,27 +274,61 @@
                                     class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-white rounded-xl border border-gray-200">
                                     <div>
                                         <label class="block text-xs font-medium text-gray-500 mb-1">Ubah Status</label>
-                                        <select name="status" id="statusSelect" onchange="toggleCommentRequired()"
-                                            class="block w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm appearance-none">
-                                            <option value="">Tidak Diubah</option>
+                                        <div class="flex flex-wrap gap-x-3 gap-y-1.5 mt-1">
+                                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                                <input type="radio" name="status" value=""
+                                                    class="status-radio w-3.5 h-3.5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                    checked onchange="toggleCommentRequired(); toggleCustomInput('status')">
+                                                <span class="text-xs text-gray-500">Tidak Diubah</span>
+                                            </label>
                                             @foreach ($statuses as $status)
-                                                <option value="{{ $status->value }}"
-                                                    {{ old('status') == $status->value ? 'selected' : '' }}>
-                                                    {{ $status->label() }}</option>
+                                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                                    <input type="radio" name="status" value="{{ $status->value }}"
+                                                        class="status-radio w-3.5 h-3.5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                        {{ old('status') == $status->value ? 'checked' : '' }}
+                                                        onchange="toggleCommentRequired(); toggleCustomInput('status')">
+                                                    <span class="text-xs text-gray-700">{{ $status->label() }}</span>
+                                                </label>
                                             @endforeach
-                                        </select>
+                                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                                <input type="radio" name="status" value="__custom__"
+                                                    class="status-radio w-3.5 h-3.5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                    onchange="toggleCommentRequired(); toggleCustomInput('status')">
+                                                <span class="text-xs text-blue-600 font-medium">Custom...</span>
+                                            </label>
+                                        </div>
+                                        <input type="text" id="statusCustomInput"
+                                            class="hidden mt-2 block w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm"
+                                            placeholder="Masukkan status custom..." disabled>
                                     </div>
                                     <div>
                                         <label class="block text-xs font-medium text-gray-500 mb-1">Ubah Prioritas</label>
-                                        <select name="priority" id="prioritySelect" onchange="toggleCommentRequired()"
-                                            class="block w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm appearance-none">
-                                            <option value="">Tidak Diubah</option>
+                                        <div class="flex flex-wrap gap-x-3 gap-y-1.5 mt-1">
+                                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                                <input type="radio" name="priority" value=""
+                                                    class="priority-radio w-3.5 h-3.5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                    checked onchange="toggleCommentRequired(); toggleCustomInput('priority')">
+                                                <span class="text-xs text-gray-500">Tidak Diubah</span>
+                                            </label>
                                             @foreach ($priorities as $priority)
-                                                <option value="{{ $priority->value }}"
-                                                    {{ old('priority') == $priority->value ? 'selected' : '' }}>
-                                                    {{ $priority->label() }}</option>
+                                                <label class="flex items-center gap-1.5 cursor-pointer">
+                                                    <input type="radio" name="priority" value="{{ $priority->value }}"
+                                                        class="priority-radio w-3.5 h-3.5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                        {{ old('priority') == $priority->value ? 'checked' : '' }}
+                                                        onchange="toggleCommentRequired(); toggleCustomInput('priority')">
+                                                    <span class="text-xs text-gray-700">{{ $priority->label() }}</span>
+                                                </label>
                                             @endforeach
-                                        </select>
+                                            <label class="flex items-center gap-1.5 cursor-pointer">
+                                                <input type="radio" name="priority" value="__custom__"
+                                                    class="priority-radio w-3.5 h-3.5 text-blue-600 border-gray-300 focus:ring-blue-500"
+                                                    onchange="toggleCommentRequired(); toggleCustomInput('priority')">
+                                                <span class="text-xs text-blue-600 font-medium">Custom...</span>
+                                            </label>
+                                        </div>
+                                        <input type="text" id="priorityCustomInput"
+                                            class="hidden mt-2 block w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-sm"
+                                            placeholder="Masukkan prioritas custom..." disabled>
                                     </div>
                                 </div>
                             @endif
@@ -534,19 +568,47 @@
             if (e.target === this) closeReplyModal();
         });
 
+        // Toggle custom text input visibility
+        function toggleCustomInput(type) {
+            const radios = document.querySelectorAll('.' + type + '-radio');
+            const customInput = document.getElementById(type + 'CustomInput');
+            let isCustom = false;
+            radios.forEach(r => { if (r.checked && r.value === '__custom__') isCustom = true; });
+
+            if (isCustom) {
+                radios.forEach(r => { r.name = ''; });
+                customInput.name = type;
+                customInput.disabled = false;
+                customInput.classList.remove('hidden');
+                customInput.focus();
+            } else {
+                if (customInput.name) customInput.name = '';
+                customInput.disabled = true;
+                customInput.classList.add('hidden');
+                radios.forEach(r => { r.name = type; });
+            }
+        }
+
         // Toggle required on comment textarea for admin/tech when status or priority is selected
         function toggleCommentRequired() {
-            const statusVal = document.getElementById('statusSelect')?.value || '';
-            const priorityVal = document.getElementById('prioritySelect')?.value || '';
+            const statusRadios = document.querySelectorAll('.status-radio');
+            const priorityRadios = document.querySelectorAll('.priority-radio');
+            const statusCustom = document.getElementById('statusCustomInput');
+            const priorityCustom = document.getElementById('priorityCustomInput');
             const textarea = document.getElementById('mainCommentTextarea');
             if (!textarea) return;
 
+            let statusVal = '';
+            statusRadios.forEach(r => { if (r.checked) { statusVal = r.value; } });
+            if (statusVal === '__custom__') statusVal = statusCustom?.value || '';
+            let priorityVal = '';
+            priorityRadios.forEach(r => { if (r.checked) { priorityVal = r.value; } });
+            if (priorityVal === '__custom__') priorityVal = priorityCustom?.value || '';
+
             if (statusVal || priorityVal) {
-                // Status or priority is selected — comment not required
                 textarea.removeAttribute('required');
                 textarea.placeholder = 'Komentar opsional jika hanya mengubah status/prioritas...';
             } else {
-                // Nothing selected — comment is required
                 textarea.setAttribute('required', 'required');
                 textarea.placeholder = 'Tulis komentar Anda di sini...';
             }
